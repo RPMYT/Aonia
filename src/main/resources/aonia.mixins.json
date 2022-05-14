@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.lilydev.aonia.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "LandmineTransformationMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

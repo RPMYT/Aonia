@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "aonia",
+  "version": "${version}",
+  "name": "Aonia",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "GPL-3.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.lilydev.aonia.Aonia"
+    ]
+  },
+  "custom": {
+    "cardinal-components": [
+      "aonia:wand_data"
+    ]
+  },
+  "mixins": [
+    "aonia.mixins.json"
+  ],
+  "accessWidener": "aonia.accesswidener",
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "*",
+    "minecraft": "1.18.2"
+  }
+}
