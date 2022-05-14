@@ -12,8 +12,8 @@ import java.util.ArrayList;
 public class AoniaSpellShapes {
     public static final SpellPiece TOUCH = SpellPiece.Registry.add(new SpellPiece(SpellPiece.Type.SHAPE, new Identifier("aonia", "touch")) {
         @Override
-        public void execute(ServerPlayerEntity caster, ArrayList<Identifier> modifiers) {
-            super.execute(caster, modifiers);
+        public void execute(ServerPlayerEntity caster) {
+            super.execute(caster);
             HitResult result = caster.raycast(1, 0, false);
             switch (result.getType()) {
                 case BLOCK -> {
@@ -30,8 +30,8 @@ public class AoniaSpellShapes {
 
     public static final SpellPiece PROJECTILE = SpellPiece.Registry.add(new SpellPiece(SpellPiece.Type.SHAPE, new Identifier("aonia", "projectile")) {
         @Override
-        public void execute(ServerPlayerEntity caster, ArrayList<Identifier> modifiers) {
-            super.execute(caster, modifiers);
+        public void execute(ServerPlayerEntity caster) {
+            super.execute(caster);
             HitResult result = caster.raycast(10, 0, false);
             if (result instanceof EntityHitResult ehr) {
                 this.setTargetEntity(ehr.getEntity());

@@ -1,8 +1,7 @@
 package net.lilydev.aonia.api.spell;
 
-import net.lilydev.aonia.Aonia;
-import net.lilydev.aonia.util.LockableArrayList;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -13,83 +12,45 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SpellDescription {
-    private final Identifier id;
-    private final Identifier shape;
-    private final LockableArrayList<SpellPiece> pieces = new LockableArrayList<>();
+    public final Identifier id;
+    public final Identifier shape;
+    private final SpellPiece[] pieces;
 
-    public SpellDescription(Identifier shape, Identifier id) {
-        this.id = id;
-        this.shape = shape;
-    }
-
-    public void addPiece(SpellPiece piece) {
-        this.pieces.add(piece);
-    }
-
-    public Identifier shape() {
-        return this.shape;
-    }
-
-    public Identifier id() {
-        return this.id;
-    }
-
-    public void markFinished() {
-        pieces.lock();
+    SpellDescription(Builder builder) {
+        this.pieces = new SpellPiece[builder.pieces.size()];
+        builder.pieces.toArray(this.pieces);
+        builder.pieces.clear();
+        this.id = builder.id;
+        this.shape = builder.shape;
     }
 
     public void execute(ServerPlayerEntity caster) {
-        if (!pieces.isLocked()) {
-            Aonia.LOGGER.error("Tried to execute an unfinished spell '" + this.id() + "'!!");
-            return;
-        }
-
         ArrayList<Identifier> modifiers = new ArrayList<>();
 
-        AtomicBoolean found = new AtomicBoolean(false);
-        AtomicBoolean accepts = new AtomicBoolean(false);
+        boolean found = false;
         AtomicReference<ArrayList<Identifier>> accepted = new AtomicReference<>();
 
-        AtomicReference<Entity> currentTargetEntity = new AtomicReference<>();
-        AtomicReference<Pair<BlockPos, BlockState>> currentTargetBlock = new AtomicReference<>();
+        Entity currentTargetEntity = caster;
+        Pair<BlockPos, BlockState> currentTargetBlock = new Pair<>(BlockPos.ORIGIN, Blocks.AIR.getDefaultState());
 
-        pieces.forEach(piece -> {
-            if (piece.isModifier() && (accepts.get() || !found.get())) {
-                if (!found.get()) {
-                    pieces.listIterator(pieces.indexOf(piece)).forEachRemaining(other -> {
-                        if (!other.isModifier()) {
-                            if (piece.acceptsModifiers()) {
-                                accepts.set(true);
-                                accepted.set(other.acceptedModifiers());
-                            }
-
-                            found.set(true);
-                        }
-                    });
-                }
-
-                if (accepted.get().contains(piece.id()) && accepts.get()) {
-                    modifiers.add(piece.id());
-                }
-            } else {
-                piece.setTargetEntity(currentTargetEntity.get());
-                piece.setTargetBlock(currentTargetBlock.get().getLeft(), currentTargetBlock.get().getRight());
-                piece.execute(caster, modifiers);
-                currentTargetEntity.set(piece.targetedEntity());
-                currentTargetBlock.set(piece.targetedBlock());
-            }
-        });
+        for (SpellPiece piece : pieces) {
+            piece.setTargetEntity(currentTargetEntity);
+            piece.setTargetBlock(currentTargetBlock.getLeft(), currentTargetBlock.getRight());
+            piece.execute(caster);
+            currentTargetEntity = piece.targetedEntity();
+            currentTargetBlock = piece.targetedBlock();
+        }
     }
 
     public final NbtCompound serialize() {
         NbtList pieces = new NbtList();
-        this.pieces.forEach(piece -> {
-            pieces.add(this.pieces.indexOf(piece), NbtString.of(piece.id().toString()));
-        });
+        for (SpellPiece piece : this.pieces) {
+            pieces.add(NbtString.of(piece.id.toString()));
+        }
+
         NbtCompound compound = new NbtCompound();
         compound.put("SpellComponents", pieces);
         compound.putString("SpellIdentifier", this.id.toString());
@@ -98,16 +59,32 @@ public class SpellDescription {
     }
 
     public static SpellDescription deserialize(NbtCompound compound) {
-        SpellDescription description = new SpellDescription(Identifier.tryParse(compound.getString("SpellIdentifier")), Identifier.tryParse(compound.getString("SpellShape")));
+        SpellDescription.Builder builder = new SpellDescription.Builder(Identifier.tryParse(compound.getString("SpellIdentifier")), Identifier.tryParse(compound.getString("SpellShape")));
 
         NbtList pieces = (NbtList) compound.get("SpellDescription");
         if (pieces != null) {
-            pieces.forEach(identifier -> {
-                description.addPiece(SpellPiece.Registry.get(Identifier.tryParse(identifier.asString())));
-            });
+            pieces.forEach(identifier -> builder.addPiece(SpellPiece.Registry.get(Identifier.tryParse(identifier.asString()))));
         }
-        description.markFinished();
 
-        return description;
+        return builder.build();
+    }
+
+    public static class Builder {
+        public final Identifier id;
+        public final Identifier shape;
+        final ArrayList<SpellPiece> pieces = new ArrayList<>();
+
+        public Builder(Identifier shape, Identifier id) {
+            this.id = id;
+            this.shape = shape;
+        }
+
+        public void addPiece(SpellPiece piece) {
+            this.pieces.add(piece);
+        }
+
+        public SpellDescription build() {
+            return new SpellDescription(this);
+        }
     }
 }
