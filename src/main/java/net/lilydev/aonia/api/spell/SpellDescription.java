@@ -19,19 +19,16 @@ public class SpellDescription {
     public final Identifier shape;
     private final SpellPiece[] pieces;
 
-    SpellDescription(Builder builder) {
-        this.pieces = new SpellPiece[builder.pieces.size()];
-        builder.pieces.toArray(this.pieces);
-        builder.pieces.clear();
-        this.id = builder.id;
-        this.shape = builder.shape;
+    SpellDescription(Identifier id, Identifier shape, SpellPiece[] pieces) {
+        this.id = id;
+        this.shape = shape;
+        this.pieces = pieces;
     }
 
     public void execute(ServerPlayerEntity caster) {
         ArrayList<Identifier> modifiers = new ArrayList<>();
 
         boolean found = false;
-        AtomicReference<ArrayList<Identifier>> accepted = new AtomicReference<>();
 
         Entity currentTargetEntity = caster;
         Pair<BlockPos, BlockState> currentTargetBlock = new Pair<>(BlockPos.ORIGIN, Blocks.AIR.getDefaultState());
@@ -69,7 +66,7 @@ public class SpellDescription {
         return builder.build();
     }
 
-    public static class Builder {
+    public static final class Builder {
         public final Identifier id;
         public final Identifier shape;
         final ArrayList<SpellPiece> pieces = new ArrayList<>();
@@ -84,7 +81,9 @@ public class SpellDescription {
         }
 
         public SpellDescription build() {
-            return new SpellDescription(this);
+            SpellPiece[] pieces = new SpellPiece[this.pieces.size()];
+            this.pieces.toArray(pieces);
+            return new SpellDescription(this.id, this.shape, pieces);
         }
     }
 }
