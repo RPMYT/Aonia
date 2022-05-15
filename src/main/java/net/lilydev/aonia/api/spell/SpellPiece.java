@@ -45,7 +45,7 @@ public abstract class SpellPiece {
     }
 
     public void execute(ServerPlayerEntity caster) {
-        Aonia.LOGGER.debug("Executing spell: " + this.id + " (casted by: " + caster.getName() + "' (UUID: '" + caster.getUuidAsString() + "'");
+        Aonia.LOGGER.debug("Executing spell piece: " + this.id + " (casted by: " + caster.getName() + "' (UUID: '" + caster.getUuidAsString() + "'");
     }
 
     public static class Registry {

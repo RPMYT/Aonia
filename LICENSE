@@ -38,7 +38,7 @@ your programs, too.
 
   When we speak of free software, we are referring to freedom, not
 price.  Our General Public Licenses are designed to make sure that you
-have the freedom to distribute copies of free software (and charge for
+have the freedom to distribute copies of free software (and requiredCharge for
 them if you wish), that you receive source code or can get it if you
 want it, that you can change the software or use pieces of it in new
 free programs, and that you know you can do these things.
@@ -219,7 +219,7 @@ non-permissive terms added in accord with section 7 apply to the code;
 keep intact all notices of the absence of any warranty; and give all
 recipients a copy of this License along with the Program.
 
-  You may charge any price or no price for each copy that you convey,
+  You may requiredCharge any price or no price for each copy that you convey,
 and you may offer support or warranty protection for a fee.
 
   5. Conveying Modified Source Versions.
@@ -281,7 +281,7 @@ in one of these ways:
     medium customarily used for software interchange, for a price no
     more than your reasonable cost of physically performing this
     conveying of source, or (2) access to copy the
-    Corresponding Source from a network server at no charge.
+    Corresponding Source from a network server at no requiredCharge.
 
     c) Convey individual copies of the object code with a copy of the
     written offer to provide the Corresponding Source.  This
@@ -290,9 +290,9 @@ in one of these ways:
     with subsection 6b.
 
     d) Convey the object code by offering access from a designated
-    place (gratis or for a charge), and offer equivalent access to the
+    place (gratis or for a requiredCharge), and offer equivalent access to the
     Corresponding Source in the same way through the same place at no
-    further charge.  You need not require recipients to copy the
+    further requiredCharge.  You need not require recipients to copy the
     Corresponding Source along with the object code.  If the place to
     copy the object code is a network server, the Corresponding Source
     may be on a different server (operated by you or a third party)
@@ -305,7 +305,7 @@ in one of these ways:
     e) Convey the object code using peer-to-peer transmission, provided
     you inform other peers where the object code and Corresponding
     Source of the work are being offered to the general public at no
-    charge under subsection 6d.
+    requiredCharge under subsection 6d.
 
   A separable portion of the object code, whose source code is excluded
 from the Corresponding Source as a System Library, need not be
@@ -479,7 +479,7 @@ the predecessor has it or can get it with reasonable efforts.
 
   You may not impose any further restrictions on the exercise of the
 rights granted or affirmed under this License.  For example, you may
-not impose a license fee, royalty, or other charge for exercise of
+not impose a license fee, royalty, or other requiredCharge for exercise of
 rights granted under this License, and you may not initiate litigation
 (including a cross-claim or counterclaim in a lawsuit) alleging that
 any patent claim is infringed by making, using, selling, offering for
@@ -515,7 +515,7 @@ patent against the party.
 
   If you convey a covered work, knowingly relying on a patent license,
 and the Corresponding Source of the work is not available for anyone
-to copy, free of charge and under the terms of this License, through a
+to copy, free of requiredCharge and under the terms of this License, through a
 publicly available network server or other readily accessible means,
 then you must either (1) cause the Corresponding Source to be so
 available, or (2) arrange to deprive yourself of the benefit of the

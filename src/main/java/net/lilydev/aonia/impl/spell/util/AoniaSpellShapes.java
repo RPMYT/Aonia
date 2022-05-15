@@ -1,29 +1,29 @@
 package net.lilydev.aonia.impl.spell.util;
 
 import net.lilydev.aonia.api.spell.SpellPiece;
+import net.minecraft.client.util.ParticleUtil;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-
-import java.util.ArrayList;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 
 public class AoniaSpellShapes {
     public static final SpellPiece TOUCH = SpellPiece.Registry.add(new SpellPiece(SpellPiece.Type.SHAPE, new Identifier("aonia", "touch")) {
         @Override
         public void execute(ServerPlayerEntity caster) {
             super.execute(caster);
-            HitResult result = caster.raycast(1, 0, false);
-            switch (result.getType()) {
-                case BLOCK -> {
-                    BlockHitResult bhr = (BlockHitResult) result;
-                    this.setTargetBlock(bhr.getBlockPos(), caster.world.getBlockState(bhr.getBlockPos()));
-                }
-                case ENTITY -> {
-                    EntityHitResult ehr = (EntityHitResult) result;
-                    this.setTargetEntity(ehr.getEntity());
-                }
+            BlockHitResult result = (BlockHitResult) caster.raycast(1, 0, false);
+            Vec3d camera = caster.getCameraPosVec(0);
+            Vec3d rotation = caster.getRotationVec(0);
+            Vec3d target = camera.add(rotation.x * 1, rotation.y * 1, rotation.z * 1);
+            EntityHitResult ehr = ProjectileUtil.raycast(caster, camera, target, Box.from(target), entity -> true, 1);
+            if (ehr != null) {
+                this.setTargetEntity(ehr.getEntity());
+            } else {
+                this.setTargetBlock(result.getBlockPos(), caster.world.getBlockState(result.getBlockPos()));
             }
         }
     });
@@ -32,9 +32,15 @@ public class AoniaSpellShapes {
         @Override
         public void execute(ServerPlayerEntity caster) {
             super.execute(caster);
-            HitResult result = caster.raycast(10, 0, false);
-            if (result instanceof EntityHitResult ehr) {
+            BlockHitResult result = (BlockHitResult) caster.raycast(10, 0, false);
+            Vec3d camera = caster.getCameraPosVec(0);
+            Vec3d rotation = caster.getRotationVec(0);
+            Vec3d target = camera.add(rotation.x * 10, rotation.y * 10, rotation.z * 10);
+            EntityHitResult ehr = ProjectileUtil.raycast(caster, camera, target, new Box(camera, target), entity -> true, 100);
+            if (ehr != null) {
                 this.setTargetEntity(ehr.getEntity());
+            } else {
+                this.setTargetBlock(result.getBlockPos(), caster.world.getBlockState(result.getBlockPos()));
             }
         }
     });

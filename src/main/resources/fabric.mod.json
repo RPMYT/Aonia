@@ -14,9 +14,6 @@
     ]
   },
   "custom": {
-    "cardinal-components": [
-      "aonia:wand_data"
-    ]
   },
   "mixins": [
     "aonia.mixins.json"

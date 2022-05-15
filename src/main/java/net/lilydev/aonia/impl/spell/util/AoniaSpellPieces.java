@@ -1,6 +1,7 @@
 package net.lilydev.aonia.impl.spell.util;
 
 import net.lilydev.aonia.api.spell.SpellPiece;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -10,7 +11,9 @@ public class AoniaSpellPieces {
         @Override
         public void execute(ServerPlayerEntity caster) {
             super.execute(caster);
-            this.targetedEntity().damage(DamageSource.MAGIC, 3F);
+            if (this.targetedEntity() instanceof LivingEntity) {
+                this.targetedEntity().damage(DamageSource.MAGIC, 3F);
+            }
         }
     });
 }
