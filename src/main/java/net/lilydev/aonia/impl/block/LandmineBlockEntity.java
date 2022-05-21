@@ -18,7 +18,7 @@ public class LandmineBlockEntity extends BlockEntity {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        this.loadedSpell = SpellDescription.deserialize(nbt.getCompound("LoadedSpell"));
+        //this.loadedSpell = SpellDescription.deserialize(nbt.getCompound("LoadedSpell"));
     }
 
     @Override

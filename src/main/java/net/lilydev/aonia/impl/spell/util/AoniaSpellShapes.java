@@ -3,10 +3,12 @@ package net.lilydev.aonia.impl.spell.util;
 import net.lilydev.aonia.api.spell.SpellPiece;
 import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
@@ -39,6 +41,14 @@ public class AoniaSpellShapes {
             EntityHitResult ehr = ProjectileUtil.raycast(caster, camera, target, new Box(camera, target), entity -> true, 100);
             if (ehr != null) {
                 this.setTargetEntity(ehr.getEntity());
+                if (this.data.getBoolean("HasTrail")) {
+                    double distance = caster.squaredDistanceTo(ehr.getEntity());
+                    BlockPos start = new BlockPos(caster.getX(), caster.getEyeY(), caster.getZ());
+                    for (int i = 1; i <= distance; i++) {
+                        BlockPos there = start.offset(caster.getHorizontalFacing(), i);
+                        ParticleUtil.spawnParticle(caster.world, there, caster.getHorizontalFacing(), ParticleTypes.END_ROD);
+                    }
+                }
             } else {
                 this.setTargetBlock(result.getBlockPos(), caster.world.getBlockState(result.getBlockPos()));
             }

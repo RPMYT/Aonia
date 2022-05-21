@@ -4,6 +4,7 @@ import net.lilydev.aonia.Aonia;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -14,10 +15,10 @@ import java.util.HashMap;
 
 @SuppressWarnings("unused")
 public abstract class SpellPiece {
-
     public final Type type;
     public final Identifier id;
-    private final ArrayList<Identifier> acceptedModifiers = new ArrayList<>();
+    private final ArrayList<SpellPiece> modifiers = new ArrayList<>();
+    protected NbtCompound data = new NbtCompound();
 
     private Entity targetEntity;
     private final Pair<BlockPos, BlockState> targetBlock = new Pair<>(BlockPos.ORIGIN, Blocks.AIR.getDefaultState());
@@ -44,6 +45,16 @@ public abstract class SpellPiece {
         this.targetBlock.setRight(state);
     }
 
+    public void addModifier(SpellPiece modifier) {
+        if (modifier.type == Type.MODIFIER) {
+            this.modifiers.add(modifier);
+        }
+    }
+
+    public boolean hasModifier(SpellPiece modifier) {
+        return this.modifiers.contains(modifier);
+    }
+
     public void execute(ServerPlayerEntity caster) {
         Aonia.LOGGER.debug("Executing spell piece: " + this.id + " (casted by: " + caster.getName() + "' (UUID: '" + caster.getUuidAsString() + "'");
     }
@@ -64,7 +75,7 @@ public abstract class SpellPiece {
     public enum Type {
         SHAPE,
         ACTION,
-        MODIFIER
+        MODIFIER, // unimplemented
     }
 /*
     enum Modifier implements SpellObject {

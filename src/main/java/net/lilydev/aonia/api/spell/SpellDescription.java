@@ -3,18 +3,13 @@ package net.lilydev.aonia.api.spell;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 
@@ -34,13 +29,16 @@ public final class SpellDescription implements Spell {
     public void execute(ServerPlayerEntity caster) {
         Entity currentTargetEntity = null;
         Pair<BlockPos, BlockState> currentTargetBlock = new Pair<>(BlockPos.ORIGIN, Blocks.AIR.getDefaultState());
+        NbtCompound data = null;
 
         for (SpellPiece piece : pieces) {
             piece.setTargetEntity(currentTargetEntity);
             piece.setTargetBlock(currentTargetBlock.getLeft(), currentTargetBlock.getRight());
+            piece.data = data;
             piece.execute(caster);
             currentTargetEntity = piece.targetedEntity();
             currentTargetBlock = piece.targetedBlock();
+            data = piece.data;
         }
     }
 
@@ -64,28 +62,41 @@ public final class SpellDescription implements Spell {
     }
 
     public static SpellDescription deserialize(NbtCompound compound) {
-        SpellDescription.Builder builder = new SpellDescription.Builder(Identifier.tryParse(compound.getString("SpellIdentifier")), Identifier.tryParse(compound.getString("SpellShape")), compound.getInt("RequiredCharge"));
+        ArrayList<SpellPiece> pieces = new ArrayList<>();
 
-        NbtList pieces = (NbtList) compound.get("SpellDescription");
-        if (pieces != null) {
-            pieces.forEach(identifier -> builder.addPiece(SpellPiece.Registry.get(Identifier.tryParse(identifier.asString()))));
+        NbtList serializedPieces = (NbtList) compound.get("SpellDescription");
+        if (serializedPieces != null) {
+            serializedPieces.forEach(identifier -> pieces.add(SpellPiece.Registry.get(Identifier.tryParse(identifier.asString()))));
         }
 
-        return builder.build();
+        return new SpellDescription.Builder(Identifier.tryParse(compound.getString("SpellIdentifier")), Identifier.tryParse(compound.getString("SpellShape")), pieces, compound.getInt("RequiredCharge")).build();
     }
 
     public static final class Builder {
         public final Identifier id;
         public final Identifier shape;
         public final int requiredCharge;
-        final ArrayList<SpellPiece> pieces = new ArrayList<>();
+        final ArrayList<SpellPiece> pieces;
 
-        public Builder(Identifier shape, Identifier id, int requiredCharge) {
+        public Builder(Identifier shape, Identifier id, Identifier[] shapeModifiers, int requiredCharge) {
             this.id = id;
             this.shape = shape;
             this.requiredCharge = requiredCharge;
 
+            this.pieces = new ArrayList<>();
+
+            for (Identifier modifier : shapeModifiers) {
+                this.pieces.add(SpellPiece.Registry.get(modifier));
+            }
+
             this.pieces.add(SpellPiece.Registry.get(shape));
+        }
+
+        public Builder(Identifier shape, Identifier id, ArrayList<SpellPiece> pieces, int requiredCharge) {
+            this.id = id;
+            this.shape = shape;
+            this.pieces = pieces;
+            this.requiredCharge = requiredCharge;
         }
 
         public void addPiece(SpellPiece piece) {

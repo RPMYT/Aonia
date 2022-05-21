@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
-public interface Wand extends PolymerItem {
+public interface Wand {
     default Spell getEquippedSpell() {
         return MagicMissileSpell.INSTANCE;
     }
@@ -25,10 +25,5 @@ public interface Wand extends PolymerItem {
             caster.sendMessage(new TranslatableText("aonia.not_enough_charge"), true);
             return false;
         }
-    }
-
-    @Override
-    default Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
-        return Items.STICK;
     }
 }
