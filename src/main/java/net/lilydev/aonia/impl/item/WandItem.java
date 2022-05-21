@@ -1,7 +1,7 @@
 package net.lilydev.aonia.impl.item;
 
 import eu.pb4.polymer.api.item.PolymerItem;
-import net.lilydev.aonia.api.item.Wand;
+import net.lilydev.aonia.api.spell.Wand;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

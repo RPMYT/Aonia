@@ -1,13 +1,7 @@
 package net.lilydev.aonia;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import dev.onyxstudios.cca.api.v3.item.ItemComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.item.ItemComponentInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.lilydev.aonia.api.item.WandDataWrapper;
-import net.lilydev.aonia.api.item.Wand;
 import net.lilydev.aonia.impl.block.LandmineBlockEntity;
 import net.lilydev.aonia.util.AoniaItems;
 import net.minecraft.block.entity.BlockEntityType;
