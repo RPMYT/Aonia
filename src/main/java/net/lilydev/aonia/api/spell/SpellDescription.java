@@ -12,18 +12,21 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class SpellDescription implements Spell {
     public final Identifier id;
-    public final Identifier shape;
     private final int requiredCharge;
     private final SpellPiece[] pieces;
 
-    SpellDescription(Identifier id, Identifier shape, int requiredCharge, SpellPiece[] pieces) {
+    SpellDescription(Identifier id, int requiredCharge, SpellPiece[] pieces) {
         this.id = id;
-        this.shape = shape;
         this.pieces = pieces;
         this.requiredCharge = requiredCharge;
+    }
+
+    public ArrayList<SpellPiece> getPieces() {
+        return new ArrayList<>(List.of(this.pieces));
     }
 
     public void execute(ServerPlayerEntity caster) {
@@ -34,11 +37,19 @@ public final class SpellDescription implements Spell {
         for (SpellPiece piece : pieces) {
             piece.setTargetEntity(currentTargetEntity);
             piece.setTargetBlock(currentTargetBlock.getLeft(), currentTargetBlock.getRight());
-            piece.data = data;
+            //if (piece.type == SpellPiece.Type.SHAPE && data == null) {
+            //    if (piece.data == null) {
+            //        piece.data = new NbtCompound();
+            //    }
+            //    piece.data.putInt("InitialCost", this.getRequiredCharge());
+            //}
+            //if (data != null) {
+            //    piece.data = data;
+           // }
             piece.execute(caster);
             currentTargetEntity = piece.targetedEntity();
             currentTargetBlock = piece.targetedBlock();
-            data = piece.data;
+            //data = piece.data;
         }
     }
 
@@ -56,7 +67,6 @@ public final class SpellDescription implements Spell {
         NbtCompound compound = new NbtCompound();
         compound.put("SpellComponents", pieces);
         compound.putString("SpellIdentifier", this.id.toString());
-        compound.putString("SpellShape", this.shape.toString());
         compound.putInt("RequiredCharge", this.getRequiredCharge());
         return compound;
     }
@@ -64,37 +74,28 @@ public final class SpellDescription implements Spell {
     public static SpellDescription deserialize(NbtCompound compound) {
         ArrayList<SpellPiece> pieces = new ArrayList<>();
 
-        NbtList serializedPieces = (NbtList) compound.get("SpellDescription");
+        NbtList serializedPieces = (NbtList) compound.get("SpellPieces");
         if (serializedPieces != null) {
             serializedPieces.forEach(identifier -> pieces.add(SpellPiece.Registry.get(Identifier.tryParse(identifier.asString()))));
         }
 
-        return new SpellDescription.Builder(Identifier.tryParse(compound.getString("SpellIdentifier")), Identifier.tryParse(compound.getString("SpellShape")), pieces, compound.getInt("RequiredCharge")).build();
+        return new SpellDescription.Builder(Identifier.tryParse(compound.getString("SpellIdentifier")),  pieces, compound.getInt("RequiredCharge")).build();
     }
 
     public static final class Builder {
         public final Identifier id;
-        public final Identifier shape;
         public final int requiredCharge;
         final ArrayList<SpellPiece> pieces;
 
-        public Builder(Identifier shape, Identifier id, Identifier[] shapeModifiers, int requiredCharge) {
+        public Builder(Identifier id, int requiredCharge) {
             this.id = id;
-            this.shape = shape;
             this.requiredCharge = requiredCharge;
 
             this.pieces = new ArrayList<>();
-
-            for (Identifier modifier : shapeModifiers) {
-                this.pieces.add(SpellPiece.Registry.get(modifier));
-            }
-
-            this.pieces.add(SpellPiece.Registry.get(shape));
         }
 
-        public Builder(Identifier shape, Identifier id, ArrayList<SpellPiece> pieces, int requiredCharge) {
+        public Builder(Identifier id, ArrayList<SpellPiece> pieces, int requiredCharge) {
             this.id = id;
-            this.shape = shape;
             this.pieces = pieces;
             this.requiredCharge = requiredCharge;
         }
@@ -106,7 +107,7 @@ public final class SpellDescription implements Spell {
         public SpellDescription build() {
             SpellPiece[] pieces = new SpellPiece[this.pieces.size()];
             this.pieces.toArray(pieces);
-            return new SpellDescription(this.id, this.shape, this.requiredCharge, pieces);
+            return new SpellDescription(this.id, this.requiredCharge, pieces);
         }
     }
 }

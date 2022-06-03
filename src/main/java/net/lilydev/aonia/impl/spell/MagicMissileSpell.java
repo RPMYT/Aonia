@@ -2,9 +2,8 @@ package net.lilydev.aonia.impl.spell;
 
 import net.lilydev.aonia.api.spell.Spell;
 import net.lilydev.aonia.api.spell.SpellDescription;
-import net.lilydev.aonia.impl.spell.util.AoniaSpellModifiers;
+import net.lilydev.aonia.api.spell.SpellPiece;
 import net.lilydev.aonia.impl.spell.util.AoniaSpellPieces;
-import net.lilydev.aonia.impl.spell.util.AoniaSpellShapes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -15,11 +14,7 @@ public class MagicMissileSpell implements Spell {
     public static final MagicMissileSpell INSTANCE = new MagicMissileSpell();
 
     private MagicMissileSpell() {
-        ArrayList<Identifier> modifierList = new ArrayList<>();
-        modifierList.add(AoniaSpellModifiers.ADD_PROJECTILE_TRAIL.id);
-        Identifier[] modifiers = new Identifier[modifierList.size()];
-        modifierList.toArray(modifiers);
-        SpellDescription.Builder builder = new SpellDescription.Builder(AoniaSpellShapes.PROJECTILE.id, new Identifier("aonia", "magic_missile"), modifiers, 0);
+        SpellDescription.Builder builder = new SpellDescription.Builder(new Identifier("aonia", "magic_missile"), 0);
         builder.addPiece(AoniaSpellPieces.HARM);
         this.spell = builder.build();
     }
@@ -32,5 +27,12 @@ public class MagicMissileSpell implements Spell {
     @Override
     public int getRequiredCharge() {
         return 0;
+    }
+
+    @Override
+    public ArrayList<SpellPiece> getPieces() {
+        ArrayList<SpellPiece> list = new ArrayList<>();
+        list.add(AoniaSpellPieces.HARM);
+        return list;
     }
 }

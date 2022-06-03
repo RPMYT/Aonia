@@ -4,7 +4,6 @@ import net.lilydev.aonia.Aonia;
 import net.lilydev.aonia.api.spell.SpellDescription;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
