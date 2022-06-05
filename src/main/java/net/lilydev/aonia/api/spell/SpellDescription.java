@@ -3,10 +3,10 @@ package net.lilydev.aonia.api.spell;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
@@ -29,7 +29,7 @@ public final class SpellDescription implements Spell {
         return new ArrayList<>(List.of(this.pieces));
     }
 
-    public void execute(ServerPlayerEntity caster) {
+    public void execute(LivingEntity caster) {
         Entity currentTargetEntity = null;
         Pair<BlockPos, BlockState> currentTargetBlock = new Pair<>(BlockPos.ORIGIN, Blocks.AIR.getDefaultState());
         NbtCompound data = null;

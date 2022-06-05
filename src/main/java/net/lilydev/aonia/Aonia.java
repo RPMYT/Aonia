@@ -27,7 +27,7 @@ public class Aonia implements ModInitializer {
     public static final EntityType<BulletEntity> BULLET = Registry.register(
             Registry.ENTITY_TYPE,
             new Identifier("aonia", "bullet"),
-            FabricEntityTypeBuilder.<BulletEntity>create(SpawnGroup.MISC, BulletEntity::new).dimensions(EntityDimensions.fixed(0.2f, 0.2f)).build()
+            FabricEntityTypeBuilder.<BulletEntity>create(SpawnGroup.MISC, (type, world) -> new BulletEntity(world)).dimensions(EntityDimensions.fixed(0.2f, 0.2f)).build()
     );
 
     @Override

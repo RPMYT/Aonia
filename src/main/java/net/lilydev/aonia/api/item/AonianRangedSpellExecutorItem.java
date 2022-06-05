@@ -4,7 +4,7 @@ import eu.pb4.polymer.api.item.PolymerItem;
 import net.lilydev.aonia.api.spell.Spell;
 import net.lilydev.aonia.api.spell.SpellPiece;
 import net.lilydev.aonia.api.spell.Spellcaster;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -32,8 +32,8 @@ public abstract class AonianRangedSpellExecutorItem extends Item implements Spel
     }
 
     @Override
-    public boolean cast(Entity caster) {
-        Spell spell = this.getEquippedSpell();
+    public boolean cast(LivingEntity caster) {
+        Spell spell = this.getEquippedSpell(caster.getActiveItem());
         HitResult result = this.getTarget();
 
         if (result.getType() == HitResult.Type.MISS) { //TODO: angelic modifier

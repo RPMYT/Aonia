@@ -4,7 +4,7 @@ import net.lilydev.aonia.api.spell.Spell;
 import net.lilydev.aonia.api.spell.SpellDescription;
 import net.lilydev.aonia.api.spell.SpellPiece;
 import net.lilydev.aonia.impl.spell.util.AoniaSpellPieces;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class MagicMissileSpell implements Spell {
     }
 
     @Override
-    public void execute(ServerPlayerEntity caster) {
+    public void execute(LivingEntity caster) {
         this.spell.execute(caster);
     }
 

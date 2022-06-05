@@ -1,8 +1,10 @@
 package net.lilydev.aonia.api.item;
 
+import net.lilydev.aonia.api.spell.Spell;
 import net.lilydev.aonia.api.spell.SpellDescription;
 import net.lilydev.aonia.impl.entity.BulletEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -52,6 +54,18 @@ public abstract class AonianFirearmItem extends AonianRangedSpellExecutorItem {
     public abstract int getFireRate();
 
     @Override
+    @Nullable
+    public Spell getEquippedSpell(ItemStack stack) {
+        NbtCompound data = stack.getOrCreateSubNbt("FirearmData");
+        NbtCompound bullet = data.getCompound("LoadedBulletData");
+        if (bullet.getBoolean("HasSpellAttached")) {
+            return SpellDescription.deserialize(bullet.getCompound("AttachedSpell"));
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public int getCapacity(ItemStack stack) {
         return -1;
     }
@@ -67,22 +81,28 @@ public abstract class AonianFirearmItem extends AonianRangedSpellExecutorItem {
     }
 
     @Override
+    public boolean cast(LivingEntity caster) {
+        NbtCompound data = caster.getActiveItem().getOrCreateSubNbt("FirearmData");
+        NbtCompound bullet = data.getCompound("LoadedBulletData");
+        if (!bullet.getBoolean("HasSpellAttached")) {
+            return false;
+        }
+
+        Spell spell = SpellDescription.deserialize(bullet.getCompound("AttachedSpell"));
+        spell.execute(caster);
+
+        return true;
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!this.isLoaded(user.getStackInHand(hand))) {
             return TypedActionResult.fail(user.getStackInHand(hand));
         }
 
-        NbtCompound data = user.getStackInHand(hand).getOrCreateSubNbt("FirearmData");
-        NbtCompound bullet = data.getCompound("LoadedBulletData");
-
-        BulletEntity entity;
-
-        if (bullet.getBoolean("HasSpellAttached")) {
-            SpellDescription spell = SpellDescription.deserialize(bullet.getCompound("AttachedSpell"));
-            entity = new BulletEntity(world, user.getX(), user.getY(), user.getZ(), user, spell, this);
-        } else {
-            entity = new BulletEntity(world, user.getX(), user.getY(), user.getZ(), user, this);
-        }
+        BulletEntity entity = new BulletEntity(world, user.getX(), user.getEyeY() + 0.02F, user.getZ(), user, this, this.getEquippedSpell(user.getStackInHand(hand)) != null);
+        entity.setVelocity(user, user.getPitch(), user.getYaw(), 0, 1.5F, 0.0F);
+        entity.setNoGravity(true);
 
         world.spawnEntity(entity);
         user.getItemCooldownManager().set(this, this.getFireRate());
@@ -92,7 +112,7 @@ public abstract class AonianFirearmItem extends AonianRangedSpellExecutorItem {
 
     @Override
     public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
-        return Items.BOW;
+        return Items.IRON_INGOT;
     }
 
     @Override

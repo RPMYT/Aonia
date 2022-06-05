@@ -1,7 +1,7 @@
 package net.lilydev.aonia.api.spell;
 
 import net.lilydev.aonia.impl.spell.MagicMissileSpell;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 
 public interface Spellcaster {
@@ -25,7 +25,7 @@ public interface Spellcaster {
      */
     int updateStoredCharge(int delta,ItemStack stack);
     
-    default Spell getEquippedSpell() {
+    default Spell getEquippedSpell(ItemStack stack) {
         return MagicMissileSpell.INSTANCE;
     }
 
@@ -34,5 +34,5 @@ public interface Spellcaster {
      * @param caster The player casting this spell
      * @return If the cast was successful
      */
-    boolean cast(Entity caster);
+    boolean cast(LivingEntity caster);
 }

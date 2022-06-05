@@ -1,11 +1,11 @@
 package net.lilydev.aonia.api.spell;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.LivingEntity;
 
 import java.util.ArrayList;
 
 public interface Spell {
-    void execute(ServerPlayerEntity caster);
+    void execute(LivingEntity caster);
     int getRequiredCharge();
     ArrayList<SpellPiece> getPieces();
 }
